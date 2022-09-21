@@ -6,22 +6,27 @@ public class EnemySpawn : MonoBehaviour
 {
     public Transform[] enemySpawnPoints;
     public GameObject enemy;
+    [SerializeField] public int ammountOfEnimies = 1;
     
-    void Update()
+    void Start()
     {
         StartCoroutine(SpawnOnTime(1));
     }
 
+
     public void Spawnenemy()
     {
-        int rnd = Random.Range(0, enemySpawnPoints.Length - 1);
+        int rnd = Random.Range(0, enemySpawnPoints.Length);
+        Debug.Log(rnd);
         Instantiate(enemy, enemySpawnPoints[rnd]);
     }
 
     private IEnumerator SpawnOnTime(float waitTime)
     {
-        Spawnenemy();
-        Debug.Log("Hey");
-        yield return new WaitForSeconds(waitTime);
+        for (int i = 0; i < ammountOfEnimies; i++)
+        {
+            Spawnenemy();
+            yield return new WaitForSeconds(waitTime);
+        }
     }
 }

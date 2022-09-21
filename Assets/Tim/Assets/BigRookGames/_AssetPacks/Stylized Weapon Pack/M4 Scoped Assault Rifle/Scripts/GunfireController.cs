@@ -4,6 +4,13 @@ namespace BigRookGames.Weapons
 {
     public class GunfireController : MonoBehaviour
     {
+
+        [SerializeField] Camera FPCamera;
+        [SerializeField] float range = 100f;
+        [SerializeField] float damage = 25f;
+        [SerializeField] Ammo ammoSlot;
+        [SerializeField] AmmoType ammoType;
+
         // --- Audio ---
         public AudioClip GunShotClip;
         public AudioSource source;
@@ -37,7 +44,7 @@ namespace BigRookGames.Weapons
 
         private void Start()
         {
-            if(source != null) source.clip = GunShotClip;
+            if (source != null) source.clip = GunShotClip;
             timeLastFired = 0;
             lastScopeState = scopeActive;
         }
@@ -47,18 +54,20 @@ namespace BigRookGames.Weapons
             // --- If rotate is set to true, rotate the weapon in scene ---
             if (rotate)
             {
-                transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y 
+                transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, transform.localEulerAngles.y
                                                                         + rotationSpeed, transform.localEulerAngles.z);
             }
 
             // --- Fires the weapon if the delay time period has passed since the last shot ---
-            if (Input.GetMouseButtonDown(0) && ((timeLastFired + shotDelay) <= Time.time))
+            if (Input.GetMouseButtonDown(0) && ((timeLastFired + shotDelay) <= Time.time) && ammoSlot.GetCurrentAmmo(ammoType) > 0)
             {
                 FireWeapon();
+                RaycastProcess(ammoType);
+                ammoSlot.ReduceCurrentAmmo(ammoType);
             }
 
             // --- Toggle scope based on public variable value ---
-            if(scope && lastScopeState != scopeActive)
+            if (scope && lastScopeState != scopeActive)
             {
                 lastScopeState = scopeActive;
                 scope.SetActive(scopeActive);
@@ -97,7 +106,7 @@ namespace BigRookGames.Weapons
                 // --- Sometimes the source is not attached to the weapon for easy instantiation on quick firing weapons like machineguns, 
                 // so that each shot gets its own audio source, but sometimes it's fine to use just 1 source. We don't want to instantiate 
                 // the parent gameobject or the program will get stuck in a loop, so we check to see if the source is a child object ---
-                if(source.transform.IsChildOf(transform))
+                if (source.transform.IsChildOf(transform))
                 {
                     source.Play();
                 }
@@ -128,5 +137,39 @@ namespace BigRookGames.Weapons
         {
             projectileToDisableOnFire.SetActive(true);
         }
+
+        private void RaycastProcess(AmmoType ammoType)
+        {
+            if (Physics.Raycast(FPCamera.transform.position, FPCamera.transform.forward, out RaycastHit hit, range))
+            {
+                if (ammoType == AmmoType.Bullets)
+                {
+                    Debug.Log("I hit " + hit.transform.name);
+                    EnemyHealth enemy = hit.transform.GetComponent<EnemyHealth>();
+                    if (enemy == null)
+                    {
+                        return;
+                    }
+                    enemy.TakeDamage(damage);
+                }
+                else if (ammoType == AmmoType.BulletsOfLife)
+                {
+                    Debug.Log("I hit " + hit.transform.name);
+                    EnemyHealth enemy = hit.transform.GetComponent<EnemyHealth>();
+                    if (enemy == null)
+                    {
+                        return;
+                    }
+                    enemy.HealZombie(damage);
+                }
+            }
+            else
+            {
+                Debug.Log("miss");
+                return;
+            }
+
+        }
+
     }
 }

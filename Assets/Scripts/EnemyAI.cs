@@ -12,6 +12,7 @@ public class EnemyAI : MonoBehaviour
     NavMeshAgent navMeshAgent;
     float distanceToTarget = Mathf.Infinity;
     bool isProvoked = false; // Whether the enemy has been provoked by the player;
+    bool isHealed = false;
     // this happens when the player enters the enemy's chaseRange,
     // when the player damages the enemy,
     // or when a trap slows the enemy
@@ -23,6 +24,7 @@ public class EnemyAI : MonoBehaviour
     void Start()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
+        target = GameObject.FindWithTag("Player").transform;
         regularSpeed = navMeshAgent.speed;
     }
 
@@ -30,7 +32,11 @@ public class EnemyAI : MonoBehaviour
     void Update()
     {
         distanceToTarget = Vector3.Distance(target.position, transform.position); // Check how far away the enemy is
-        if (isProvoked == true)
+        if (isHealed == true)
+        {
+            Flee();
+        }
+        else if (isProvoked == true)
         {
             EngageTarget(); // Engage target (chase after or attack)
         }
@@ -46,6 +52,23 @@ public class EnemyAI : MonoBehaviour
                 navMeshAgent.speed = regularSpeed;
             }
         }
+    }
+
+    public void Flee()
+    {
+        FaceTarget();
+        ChaseTarget();
+        if (distanceToTarget <= navMeshAgent.stoppingDistance)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    public void BecomeScared()
+    {
+        Debug.Log("healed");
+        isHealed = true;
+        target = GameObject.FindWithTag("FleePoint").transform;
     }
 
     // Engage target (chase after or attack)
