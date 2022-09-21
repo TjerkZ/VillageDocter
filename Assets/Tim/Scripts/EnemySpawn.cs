@@ -10,7 +10,7 @@ public class EnemySpawn : MonoBehaviour
     
     void Start()
     {
-        StartCoroutine(SpawnOnTime(1));
+       // StartCoroutine(SpawnOnTime(1));
     }
 
 
@@ -21,7 +21,12 @@ public class EnemySpawn : MonoBehaviour
         Instantiate(enemy, enemySpawnPoints[rnd]);
     }
 
-    private IEnumerator SpawnOnTime(float waitTime)
+    public void NextWave()
+    {
+        ammountOfEnimies += 10;
+    }
+
+    public IEnumerator SpawnOnTime(float waitTime)
     {
         for (int i = 0; i < ammountOfEnimies; i++)
         {
