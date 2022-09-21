@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Inventory : MonoBehaviour
+public class Inventory : MonoBehaviour, IItemContainer
 {
    [SerializeField] List<Item> items;
    [SerializeField] Transform itemsParent;
@@ -32,20 +32,26 @@ public class Inventory : MonoBehaviour
 
     public bool AddItem(Item item)
     {
-        if (IsFull())
-                return false;
-        
-        items.Add(item);
-        RefreshUI();
-        return true;
+        for (int i = 0; i < itemSlots.Length; i++)
+        {
+            if(itemSlots[i].Item == item)
+            {
+                itemSlots[i].Item = item;
+                return true;
+            }
+        }
+        return false;
     }
 
     public bool RemoveItem(Item item)
     {
-        if(items.Remove(item))
+        for (int i = 0; i < itemSlots.Length; i++)
         {
-            RefreshUI();
-            return true;
+            if(itemSlots[i].Item == item)
+            {
+                itemSlots[i].Item = null;
+                return true;
+            }
         }
         return false;
     }
@@ -55,4 +61,30 @@ public class Inventory : MonoBehaviour
         return items.Count >= itemSlots.Length;
     }
 
+    public bool ContainsItem(Item item)
+    {
+        for (int i = 0; i < itemSlots.Length; i++)
+            {
+                 if(itemSlots[i].Item == item)
+                {
+                    
+                    return true;
+                }
+            }
+        return false;
+    }
+
+    public int ItemCount(Item item)
+    {
+        int number = 0;
+        for (int i = 0; i < itemSlots.Length; i++)
+            {
+                 if(itemSlots[i].Item == item)
+                {
+                    
+                    number++;
+                }
+            }
+      return number;
+    }
 }
