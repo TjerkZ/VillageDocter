@@ -220,8 +220,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e34d1bb6ca2afa4793744d8fbb87e49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slowPower: 5
-  slowDuration: 3000
+  slowPower: 1
+  slowDuration: 300000
 --- !u!54 &-2582272699729915932
 Rigidbody:
   m_ObjectHideFlags: 0
